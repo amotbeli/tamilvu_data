@@ -60,6 +60,14 @@ def main():
         uploaded_date = uploaded_details[1].find("p").text
         book_data["uploaded date"] = uploaded_date
 
+        marc_href = book_details.find("a", class_="btn btn-secondary btn-sm mr-1").get("href")
+        marc_url = "https://www.tamildigitallibrary.in/"+marc_href
+        response_marc = requests.get(marc_url).text
+        soup_marc = BeautifulSoup(response_marc, "lxml")
+
+        dl_url = soup_marc.find("a", class_="download_img").get("href")
+        book_data["download link"] = dl_url
+
         tamilvu_data.append(book_data)
 
         with open("tamilvu_data.json", "w", encoding="utf8") as file:
