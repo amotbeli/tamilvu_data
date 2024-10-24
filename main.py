@@ -14,7 +14,7 @@ def main():
     container = soup.find("div", class_="tamilauthor-names col-md-12 list-title-view")
     books = container.find_all("li")
     for book in books:
-        time.sleep(2)
+        time.sleep(5)
         book_id += 1
         book_href = book.find("a").get("href")
         book_url = "https://www.tamildigitallibrary.in/"+book_href
@@ -28,6 +28,37 @@ def main():
         book_data = {}
         book_data["id"] = book_id
         book_data["title"] = book_title
+
+        other_details = book_details.find_all("tr")
+        for other_detail in other_details:
+            items = other_detail.find_all("td")
+            key = items[0].text.strip()
+            value = items[1].text.strip()
+            if key == "ஆசிரியர்":
+                book_authors = value
+                book_data["authors"] = book_authors
+            elif key == "பதிப்பாளர்":
+                book_publishers = value
+                book_data["publishers"] = book_publishers
+            elif key == "வடிவ விளக்கம்":
+                page_numbers = value
+                book_data["page numbers"] = page_numbers
+            elif key == "தொடர் தலைப்பு":
+                series_title = value
+                book_data["series title"] = series_title
+            elif key == "குறிச் சொற்கள்":
+                tags = value
+                book_data["tags"] = tags
+            elif key == "துறை / பொருள்":
+                subject_theme = value
+                book_data["subject or theme"] = subject_theme
+
+        more_details = soup_in.find("div", class_="author-cover")
+        uploaded_details = more_details.find_all("tr")
+        document_location = uploaded_details[0].find("p").text
+        book_data["document location"] = document_location
+        uploaded_date = uploaded_details[1].find("p").text
+        book_data["uploaded date"] = uploaded_date
 
         tamilvu_data.append(book_data)
 
