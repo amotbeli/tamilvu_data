@@ -9,6 +9,7 @@ def main():
     soup = BeautifulSoup(response, "lxml")
 
     book_id = 0
+    tamilvu_data = []
 
     container = soup.find("div", class_="tamilauthor-names col-md-12 list-title-view")
     books = container.find_all("li")
@@ -18,8 +19,20 @@ def main():
         book_href = book.find("a").get("href")
         book_url = "https://www.tamildigitallibrary.in/"+book_href
 
-        with open("acl_data.json", "a", encoding="utf8") as file:
-            json.dump(f"{book_id}: {book_url}", file)
+        response_in = requests.get(book_url).text
+        soup_in = BeautifulSoup(response_in, "lxml")
+
+        book_details = soup_in.find("div", class_="books-content")
+        book_title = book_details.find("h4").text.strip()
+
+        book_data = {}
+        book_data["id"] = book_id
+        book_data["title"] = book_title
+
+        tamilvu_data.append(book_data)
+
+        with open("tamilvu_data.json", "w", encoding="utf8") as file:
+            json.dump(tamilvu_data, file, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
     main()
